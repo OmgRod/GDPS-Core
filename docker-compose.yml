@@ -54,7 +54,6 @@ services:
       - frontend
       - backend
 
-  # Prisma Studio service: runs the Prisma web UI and connects to the same Postgres DB
   prisma:
     image: node:20-alpine
     container_name: gdps-prisma

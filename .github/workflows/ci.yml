@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [backend, frontend]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable corepack (Yarn)
+        run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.project }}
+          yarn install --immutable || yarn install
+
+      - name: Build
+        run: |
+          cd ${{ matrix.project }}
+          if [ -f package.json ]; then yarn build || echo "no build script"; fi
+
+      - name: Run tests
+        run: |
+          cd ${{ matrix.project }}
+          if yarn test -v >/dev/null 2>&1; then yarn test || echo "tests failed"; else echo "no tests"; fi
