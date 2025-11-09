@@ -1,0 +1,110 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+/*
+CREATE TABLE `acccomments` (
+  `userID` int(11) NOT NULL,
+  `userName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `comment` longtext COLLATE utf8_unicode_ci NOT NULL,
+  `secret` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'unused',
+  `commentID` int(11) NOT NULL,
+  `timestamp` int(11) NOT NULL,
+  `likes` int(11) NOT NULL DEFAULT '0',
+  `isSpam` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+model AccComments {
+  commentID Int     @id @map("commentID")
+  userID    Int     @map("userID")
+  userName  String  @map("userName")
+  comment   String
+  secret    String  @default("unused")
+  timestamp Int
+  likes     Int     @default(0)
+  isSpam    Boolean @default(false) @map("isSpam")
+
+  @@map("acccomments")
+}
+
+/*
+CREATE TABLE `accounts` (
+  `userName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `gjp2` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `accountID` int(11) NOT NULL,
+  `isAdmin` int(11) NOT NULL DEFAULT '0',
+  `mS` int(11) NOT NULL DEFAULT '0',
+  `frS` int(11) NOT NULL DEFAULT '0',
+  `cS` int(11) NOT NULL DEFAULT '0',
+  `youtubeurl` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `twitter` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `twitch` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `salt` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `registerDate` int(11) NOT NULL DEFAULT '0',
+  `friendsCount` int(11) NOT NULL DEFAULT '0',
+  `discordID` bigint(20) NOT NULL DEFAULT '0',
+  `discordLinkReq` bigint(20) NOT NULL DEFAULT '0',
+  `isActive` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+model Account {
+  accountID      Int     @id @map("accountID")
+  userName       String  @map("userName")
+  password       String
+  gjp2           String? @map("gjp2")
+  email          String
+  isAdmin        Int     @default(0) @map("isAdmin")
+  mS             Int     @default(0) @map("mS")
+  frS            Int     @default(0) @map("frS")
+  cS             Int     @default(0) @map("cS")
+  youtubeurl     String  @default("") @map("youtubeurl")
+  twitter        String  @default("")
+  twitch         String  @default("")
+  salt           String  @default("")
+  registerDate   Int     @default(0) @map("registerDate")
+  friendsCount   Int     @default(0) @map("friendsCount")
+  discordID      BigInt  @default(0) @map("discordID")
+  discordLinkReq BigInt  @default(0) @map("discordLinkReq")
+  isActive       Boolean @default(false) @map("isActive")
+
+  @@map("accounts")
+}
+
+/*
+CREATE TABLE `actions` (
+  `ID` int(11) NOT NULL,
+  `type` int(11) NOT NULL DEFAULT '0',
+  `value` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  `timestamp` int(11) NOT NULL DEFAULT '0',
+  `value2` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  `value3` int(11) NOT NULL DEFAULT '0',
+  `value4` int(11) NOT NULL DEFAULT '0',
+  `value5` int(11) NOT NULL DEFAULT '0',
+  `value6` int(11) NOT NULL DEFAULT '0',
+  `account` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+model Actions {
+	ID Int @id @map("ID")
+	type Int @default(0)
+	value String
+	timestamp Int @default(0)
+	value2 String
+	value3 Int @default(0)
+	value4 Int @default(0)
+	value5 Int @default(0)
+	value6 Int @default(0)
+	account Int @default(0)
+
+	@@map("actions")
+}

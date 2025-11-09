@@ -1,0 +1,77 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gdps-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - gdps_data:/data
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gdps-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+  db:
+    image: postgres:15
+    container_name: gdps-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gdps
+    volumes:
+      - gdps_pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  proxy:
+    image: nginx:alpine
+    container_name: gdps-proxy
+    volumes:
+      - ./docker/proxy/default.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+
+  # Prisma Studio service: runs the Prisma web UI and connects to the same Postgres DB
+  prisma:
+    image: node:20-alpine
+    container_name: gdps-prisma
+    working_dir: /app
+    volumes:
+      - ./backend:/app:rw
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/gdps?schema=public&sslmode=disable
+    command: sh -c "npm install --include=dev --no-audit --no-fund && npx prisma generate && npx prisma studio --port 5555 --hostname 0.0.0.0"
+    ports:
+      - "5555:5555"
+    restart: unless-stopped
+    depends_on:
+      - db
+
+volumes:
+  gdps_data:
+    name: gdps_data
+  gdps_pgdata:
+    name: gdps_pgdata
