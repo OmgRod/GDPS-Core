@@ -12,7 +12,7 @@ function runtimeConfig() {
 export default function Home() {
   return (
     <div>
-      <h1>Welcome to {runtimeConfig()?.gdpsName ?? "GDPS"}!</h1>
+      <h1>Welcome to {runtimeConfig()?.gdpsName ?? "GDPS"}, {"username"}!</h1>
       <p>gonna add more stuff soon!</p>
     </div>
   );
