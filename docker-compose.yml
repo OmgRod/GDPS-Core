@@ -20,8 +20,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     container_name: gdps-frontend
     restart: unless-stopped
     depends_on:
@@ -45,14 +45,25 @@ services:
   proxy:
     image: nginx:alpine
     container_name: gdps-proxy
+    environment:
+      - STUDIO_USER=${STUDIO_USER}
     volumes:
       - ./docker/proxy/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/proxy/docker-entrypoint.sh:/docker/proxy/docker-entrypoint.sh:ro
+      # Mount the backend config so the proxy can generate a runtime config.js without rebuilding
+      - ./backend/config:/etc/backend-config:ro
+    # Publish both 80 (frontend + backend proxy) and 5555 (Prisma Studio via nginx)
     ports:
-      - "80:80"
+      - "8080:80"
+      - "5555:5555"
+    # Use the custom entrypoint which reads the Studio password from a Docker secret
+    command: sh -c "/docker/proxy/docker-entrypoint.sh"
     restart: unless-stopped
     depends_on:
       - frontend
       - backend
+    secrets:
+      - studio_pass
 
   prisma:
     image: node:20-alpine
@@ -62,15 +73,21 @@ services:
       - ./backend:/app:rw
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/gdps?schema=public&sslmode=disable
-    command: sh -c "npm install --include=dev --no-audit --no-fund && npx prisma generate && npx prisma studio --port 5555 --hostname 0.0.0.0"
-    ports:
-      - "5555:5555"
+    # Wait for Postgres before proceeding (prevents startup races). The wait script is provided in the
+    # backend volume at /app/scripts/wait-for-postgres.sh
+    command: sh -c "/app/scripts/wait-for-postgres.sh db 5432 && npm install --include=dev --no-audit --no-fund && npx prisma generate && npx prisma studio --port 5555 --hostname 0.0.0.0"
     restart: unless-stopped
     depends_on:
       - db
+    secrets:
+      - studio_pass
 
 volumes:
   gdps_data:
     name: gdps_data
   gdps_pgdata:
     name: gdps_pgdata
+
+secrets:
+  studio_pass:
+    file: ./docker/secrets/studio_pass.txt

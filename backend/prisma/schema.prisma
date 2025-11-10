@@ -1,4 +1,4 @@
-datasource db {
+datasource gdps {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
@@ -7,69 +7,33 @@ generator client {
   provider = "prisma-client-js"
 }
 
-/*
-CREATE TABLE `acccomments` (
-  `userID` int(11) NOT NULL,
-  `userName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `comment` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `secret` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'unused',
-  `commentID` int(11) NOT NULL,
-  `timestamp` int(11) NOT NULL,
-  `likes` int(11) NOT NULL DEFAULT '0',
-  `isSpam` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-*/
-
 model AccComments {
-  commentID Int     @id @map("commentID")
+  commentID Int     @id @map("commentID") @default(autoincrement())
   userID    Int     @map("userID")
   userName  String  @map("userName")
-  comment   String
-  secret    String  @default("unused")
-  timestamp Int
-  likes     Int     @default(0)
+  comment   String  @map("comment")
+  secret    String  @default("unused") @map("secret")
+  timestamp Int     @map("timestamp")
+  likes     Int     @default(0) @map("likes")
   isSpam    Boolean @default(false) @map("isSpam")
 
   @@map("acccomments")
 }
 
-/*
-CREATE TABLE `accounts` (
-  `userName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `gjp2` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `accountID` int(11) NOT NULL,
-  `isAdmin` int(11) NOT NULL DEFAULT '0',
-  `mS` int(11) NOT NULL DEFAULT '0',
-  `frS` int(11) NOT NULL DEFAULT '0',
-  `cS` int(11) NOT NULL DEFAULT '0',
-  `youtubeurl` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `twitter` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `twitch` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `salt` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `registerDate` int(11) NOT NULL DEFAULT '0',
-  `friendsCount` int(11) NOT NULL DEFAULT '0',
-  `discordID` bigint(20) NOT NULL DEFAULT '0',
-  `discordLinkReq` bigint(20) NOT NULL DEFAULT '0',
-  `isActive` tinyint(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-*/
-
 model Account {
-  accountID      Int     @id @map("accountID")
+  accountID      Int     @id @map("accountID") @default(autoincrement())
   userName       String  @map("userName")
-  password       String
+  password       String  @map("password")
   gjp2           String? @map("gjp2")
-  email          String
+  email          String  @map("email")
   isAdmin        Int     @default(0) @map("isAdmin")
   mS             Int     @default(0) @map("mS")
   frS            Int     @default(0) @map("frS")
   cS             Int     @default(0) @map("cS")
   youtubeurl     String  @default("") @map("youtubeurl")
-  twitter        String  @default("")
-  twitch         String  @default("")
-  salt           String  @default("")
+  twitter        String  @default("") @map("twitter")
+  twitch         String  @default("") @map("twitch")
+  salt           String  @default("") @map("salt")
   registerDate   Int     @default(0) @map("registerDate")
   friendsCount   Int     @default(0) @map("friendsCount")
   discordID      BigInt  @default(0) @map("discordID")
@@ -79,32 +43,1213 @@ model Account {
   @@map("accounts")
 }
 
+model Actions {
+  ID        Int    @id @default(autoincrement()) @map("ID")
+  type      Int    @default(0)
+  value     String @default("0")
+  timestamp Int    @default(0)
+  value2    String @default("0")
+  value3    Int    @default(0)
+  value4    Int    @default(0)
+  value5    Int    @default(0)
+  value6    Int    @default(0)
+  account   Int    @default(0)
+
+  @@map("actions")
+}
+
+model ActionsDownloads {
+  id         Int      @id @default(autoincrement()) @map("id")
+  levelID    Int      @map("levelID")
+  ip         Bytes?   @map("ip")
+  uploadDate DateTime @default(now()) @map("uploadDate")
+
+  @@map("actions_downloads")
+}
+
+model ActionsLikes {
+  id         Int      @id @default(autoincrement()) @map("id")
+  itemID     Int      @map("itemID")
+  type       Int      @default(0) @map("type")
+  isLike     Boolean  @default(false) @map("isLike")
+  ip         Bytes?   @map("ip")
+  uploadDate DateTime @default(now()) @map("uploadDate")
+
+  @@map("actions_likes")
+}
+
+model BannedIPs {
+  ID Int    @id @default(autoincrement()) @map("ID")
+  IP String @default("127.0.0.1") @map("IP")
+
+  @@map("bannedips")
+}
+
+model Blocks {
+  ID      Int @id @default(autoincrement()) @map("ID")
+  person1 Int @map("person1")
+  person2 Int @map("person2")
+
+  @@map("blocks")
+}
+
+model Comments {
+  commentID Int     @id @default(autoincrement()) @map("commentID")
+  userID    Int     @map("userID")
+  userName  String  @map("userName")
+  comment   String  @map("comment")
+  secret    String  @default("none") @map("secret")
+  levelID   Int     @map("levelID")
+  timestamp Int     @map("timestamp")
+  likes     Int     @default(0) @map("likes")
+  percent   Int     @default(0) @map("percent")
+  isSpam    Boolean @default(false) @map("isSpam")
+
+  @@map("comments")
+}
+
+model CpShares {
+  shareID Int @id @default(autoincrement()) @map("shareID")
+  levelID Int @map("levelID")
+  userID  Int @map("userID")
+
+  @@map("cpshares")
+}
+
+model DailyFeatures {
+  feaID     Int @id @default(autoincrement()) @map("feaID")
+  levelID   Int @map("levelID")
+  timestamp Int @map("timestamp")
+  type      Int @default(0) @map("type")
+
+  @@map("dailyfeatures")
+}
+
+model FriendReqs {
+  ID          Int    @id @default(autoincrement()) @map("ID")
+  accountID   Int    @map("accountID")
+  toAccountID Int    @map("toAccountID")
+  comment     String @map("comment")
+  uploadDate  Int    @map("uploadDate")
+  isNew       Boolean @default(true) @map("isNew")
+
+  @@map("friendreqs")
+}
+
+model Friendships {
+  ID       Int @id @default(autoincrement()) @map("ID")
+  person1  Int @map("person1")
+  person2  Int @map("person2")
+  isNew1   Int @map("isNew1")
+  isNew2   Int @map("isNew2")
+
+  @@map("friendships")
+}
+
+model Gauntlets {
+  ID     Int @id @default(autoincrement()) @map("ID")
+  level1 Int @map("level1")
+  level2 Int @map("level2")
+  level3 Int @map("level3")
+  level4 Int @map("level4")
+  level5 Int @map("level5")
+
+  @@map("gauntlets")
+}
+
+model Levels {
+  levelID         Int      @id @default(autoincrement()) @map("levelID")
+  gameVersion     Int      @map("gameVersion")
+  binaryVersion   Int      @default(0) @map("binaryVersion")
+  userName        String   @map("userName")
+  levelName       String   @map("levelName")
+  levelDesc       String   @map("levelDesc")
+  levelVersion    Int      @map("levelVersion")
+  levelLength     Int      @default(0) @map("levelLength")
+  audioTrack      Int      @map("audioTrack")
+  auto            Int      @map("auto")
+  password        Int      @map("password")
+  original        Int      @map("original")
+  twoPlayer       Int      @default(0) @map("twoPlayer")
+  songID          Int      @default(0) @map("songID")
+  songIDs         String   @default("") @map("songIDs")
+  sfxIDs          String   @default("") @map("sfxIDs")
+  objects         Int      @default(0) @map("objects")
+  coins           Int      @default(0) @map("coins")
+  requestedStars  Int      @default(0) @map("requestedStars")
+  extraString     String   @map("extraString")
+  levelString     String?  @map("levelString")
+  levelInfo       String   @map("levelInfo")
+  secret          String   @map("secret")
+  starDifficulty  Int      @default(0) @map("starDifficulty")
+  downloads       Int      @default(300) @map("downloads")
+  likes           Int      @default(100) @map("likes")
+  starDemon       Int      @map("starDemon")
+  starAuto        Boolean  @default(false) @map("starAuto")
+  starStars       Int      @default(0) @map("starStars")
+  uploadDate      BigInt   @map("uploadDate")
+  updateDate      BigInt   @map("updateDate")
+  rateDate        BigInt   @default(0) @map("rateDate")
+  starCoins       Int      @default(0) @map("starCoins")
+  starFeatured    Int      @default(0) @map("starFeatured")
+  starHall        Int      @default(0) @map("starHall")
+  starEpic        Int      @default(0) @map("starEpic")
+  starDemonDiff   Int      @default(0) @map("starDemonDiff")
+  userID          Int      @map("userID")
+  extID           String   @map("extID")
+  unlisted        Int      @map("unlisted")
+  originalReup    Int      @default(0) @map("originalReup")
+  hostname        String   @map("hostname")
+  isCPShared      Int      @default(0) @map("isCPShared")
+  isDeleted       Int      @default(0) @map("isDeleted")
+  isLDM           Int      @default(0) @map("isLDM")
+  unlisted2       Int      @default(0) @map("unlisted2")
+  wt              Int      @default(0) @map("wt")
+  wt2             Int      @default(0) @map("wt2")
+  ts              Int      @default(0) @map("ts")
+  settingsString  String   @default("") @map("settingsString")
+
+  @@map("levels")
+}
+
+model LevelScores {
+  scoreID   Int    @id @default(autoincrement()) @map("scoreID")
+  accountID Int    @map("accountID")
+  levelID   Int    @map("levelID")
+  percent   Int    @map("percent")
+  uploadDate Int   @map("uploadDate")
+  attempts  Int    @default(0) @map("attempts")
+  coins     Int    @default(0) @map("coins")
+  clicks    Int    @default(0) @map("clicks")
+  time      Int    @default(0) @map("time")
+  progresses String @map("progresses")
+  dailyID   Int    @default(0) @map("dailyID")
+
+  @@map("levelscores")
+}
+
+model Links {
+  ID             Int    @id @default(autoincrement()) @map("ID")
+  accountID      Int    @map("accountID")
+  targetAccountID Int   @map("targetAccountID")
+  server         String @map("server")
+  timestamp      Int    @map("timestamp")
+  userID         Int    @map("userID")
+  targetUserID   Int    @map("targetUserID")
+
+  @@map("links")
+}
+
+model Lists {
+  listID         Int    @id @default(autoincrement()) @map("listID")
+  listName       String @map("listName")
+  listDesc       String @map("listDesc")
+  listVersion    Int    @map("listVersion")
+  accountID      Int    @map("accountID")
+  downloads      Int    @default(0) @map("downloads")
+  starDifficulty Int    @map("starDifficulty")
+  likes          Int    @default(0) @map("likes")
+  starFeatured   Int    @default(0) @map("starFeatured")
+  starStars      Int    @default(0) @map("starStars")
+  listlevels     String @map("listlevels")
+  countForReward Int    @default(0) @map("countForReward")
+  uploadDate     Int    @default(0) @map("uploadDate")
+  updateDate     Int    @default(0) @map("updateDate")
+  original       Int    @default(0) @map("original")
+  unlisted       Int    @default(0) @map("unlisted")
+
+  @@map("lists")
+}
+
+model MapPacks {
+  ID        Int    @id @default(autoincrement()) @map("ID")
+  name      String @map("name")
+  levels    String @map("levels")
+  stars     Int    @map("stars")
+  coins     Int    @map("coins")
+  difficulty Int   @map("difficulty")
+  rgbcolors String @map("rgbcolors")
+  colors2   String @default("none") @map("colors2")
+
+  @@map("mappacks")
+}
+
+model Messages {
+  messageID   Int    @id @default(autoincrement()) @map("messageID")
+  userID      Int    @map("userID")
+  userName    String @map("userName")
+  body        String @map("body")
+  subject     String @map("subject")
+  accID       Int    @map("accID")
+  toAccountID Int    @map("toAccountID")
+  timestamp   Int    @map("timestamp")
+  secret      String @default("unused") @map("secret")
+  isNew       Int    @default(0) @map("isNew")
+
+  @@map("messages")
+}
+
+model ModActions {
+  ID      Int    @id @default(autoincrement()) @map("ID")
+  type    Int    @default(0) @map("type")
+  value   String @default("0") @map("value")
+  timestamp Int  @default(0) @map("timestamp")
+  value2  String @default("0") @map("value2")
+  value3  Int    @default(0) @map("value3")
+  value4  String @default("0") @map("value4")
+  value5  Int    @default(0) @map("value5")
+  value6  Int    @default(0) @map("value6")
+  account Int    @default(0) @map("account")
+  value7  String @default("0") @map("value7")
+
+  @@map("modactions")
+}
+
+model ModIpPerms {
+  categoryID    Int @id @default(autoincrement()) @map("categoryID")
+  actionFreeCopy Int @map("actionFreeCopy")
+
+  @@map("modipperms")
+}
+
+model ModIps {
+  ID            Int    @id @default(autoincrement()) @map("ID")
+  IP            String @map("IP")
+  isMod         Int    @map("isMod")
+  accountID     Int    @map("accountID")
+  modipCategory Int    @map("modipCategory")
+
+  @@map("modips")
+}
+
+model PlatScores {
+  ID        Int @id @default(autoincrement()) @map("ID")
+  accountID Int @default(0) @map("accountID")
+  levelID   Int @default(0) @map("levelID")
+  time      Int @default(0) @map("time")
+  points    Int @default(0) @map("points")
+  timestamp Int @map("timestamp")
+
+  @@map("platscores")
+}
+
+model Quests {
+  ID     Int    @id @default(autoincrement()) @map("ID")
+  type   Int    @map("type")
+  amount Int    @map("amount")
+  reward Int    @map("reward")
+  name   String @map("name")
+
+  @@map("quests")
+}
+
+model Reports {
+  ID       Int    @id @default(autoincrement()) @map("ID")
+  levelID  Int    @map("levelID")
+  hostname String @map("hostname")
+
+  @@map("reports")
+}
+
+model RoleAssign {
+  assignID BigInt @id @default(autoincrement()) @map("assignID")
+  roleID   BigInt @map("roleID")
+  accountID BigInt @map("accountID")
+
+  @@map("roleassign")
+}
+
+model Roles {
+  roleID        BigInt @id @default(autoincrement()) @map("roleID")
+  priority      Int    @default(0) @map("priority")
+  roleName      String @map("roleName")
+  commandRate   Int    @default(0) @map("commandRate")
+  commandFeature Int   @default(0) @map("commandFeature")
+  commandEpic   Int    @default(0) @map("commandEpic")
+  commandUnepic Int    @default(0) @map("commandUnepic")
+  commandVerifycoins Int @default(0) @map("commandVerifycoins")
+  commandDaily  Int    @default(0) @map("commandDaily")
+  commandWeekly Int    @default(0) @map("commandWeekly")
+  commandDelete Int    @default(0) @map("commandDelete")
+  commandSetacc Int    @default(0) @map("commandSetacc")
+  commandRenameOwn Int @default(1) @map("commandRenameOwn")
+  commandRenameAll Int @default(0) @map("commandRenameAll")
+  commandPassOwn Int @default(1) @map("commandPassOwn")
+  commandPassAll Int @default(0) @map("commandPassAll")
+  commandDescriptionOwn Int @default(1) @map("commandDescriptionOwn")
+  commandDescriptionAll Int @default(0) @map("commandDescriptionAll")
+  commandPublicOwn Int @default(1) @map("commandPublicOwn")
+  commandPublicAll Int @default(0) @map("commandPublicAll")
+  commandUnlistOwn Int @default(1) @map("commandUnlistOwn")
+  commandUnlistAll Int @default(0) @map("commandUnlistAll")
+  commandSharecpOwn Int @default(1) @map("commandSharecpOwn")
+  commandSharecpAll Int @default(0) @map("commandSharecpAll")
+  commandSongOwn Int @default(1) @map("commandSongOwn")
+  commandSongAll Int @default(0) @map("commandSongAll")
+  profilecommandDiscord Int @default(1) @map("profilecommandDiscord")
+  actionRateDemon Int @default(0) @map("actionRateDemon")
+  actionRateStars Int @default(0) @map("actionRateStars")
+  actionRateDifficulty Int @default(0) @map("actionRateDifficulty")
+  actionRequestMod Int @default(0) @map("actionRequestMod")
+  actionSuggestRating Int @default(0) @map("actionSuggestRating")
+  actionDeleteComment Int @default(0) @map("actionDeleteComment")
+  toolLeaderboardsban Int @default(0) @map("toolLeaderboardsban")
+  toolPackcreate Int @default(0) @map("toolPackcreate")
+  toolQuestsCreate Int @default(0) @map("toolQuestsCreate")
+  toolModactions Int @default(0) @map("toolModactions")
+  toolSuggestlist Int @default(0) @map("toolSuggestlist")
+  dashboardModTools Int @default(0) @map("dashboardModTools")
+  modipCategory Int @default(0) @map("modipCategory")
+  isDefault Int @default(0) @map("isDefault")
+  commentColor String @default("000,000,000") @map("commentColor")
+  modBadgeLevel Int @default(0) @map("modBadgeLevel")
+
+  @@map("roles")
+}
+
+model Songs {
+  ID          Int    @id @default(autoincrement()) @map("ID")
+  name        String @map("name")
+  authorID    Int    @map("authorID")
+  authorName  String @map("authorName")
+  size        String @map("size")
+  download    String @map("download")
+  hash        String @default("") @map("hash")
+  isDisabled  Int    @default(0) @map("isDisabled")
+  levelsCount Int    @default(0) @map("levelsCount")
+  reuploadTime Int   @default(0) @map("reuploadTime")
+
+  @@map("songs")
+}
+
+model Suggest {
+  ID              Int @id @default(autoincrement()) @map("ID")
+  suggestBy       Int @default(0) @map("suggestBy")
+  suggestLevelId  Int @default(0) @map("suggestLevelId")
+  suggestDifficulty Int @default(0) @map("suggestDifficulty")
+  suggestStars    Int @default(0) @map("suggestStars")
+  suggestFeatured Int @default(0) @map("suggestFeatured")
+  suggestAuto     Int @default(0) @map("suggestAuto")
+  suggestDemon    Int @default(0) @map("suggestDemon")
+  timestamp       Int @map("timestamp")
+
+  @@map("suggest")
+}
+
+model Users {
+  userID        Int     @id @default(autoincrement()) @map("userID")
+  isRegistered  Int     @map("isRegistered")
+  extID         String  @map("extID")
+  userName      String  @default("undefined") @map("userName")
+  stars         Int     @default(0) @map("stars")
+  demons        Int     @default(0) @map("demons")
+  icon          Int     @default(0) @map("icon")
+  color1        Int     @default(0) @map("color1")
+  color2        Int     @default(3) @map("color2")
+  color3        Int     @default(0) @map("color3")
+  iconType      Int     @default(0) @map("iconType")
+  coins         Int     @default(0) @map("coins")
+  userCoins     Int     @default(0) @map("userCoins")
+  special       Int     @default(0) @map("special")
+  gameVersion   Int     @default(0) @map("gameVersion")
+  secret        String  @default("none") @map("secret")
+  accIcon       Int     @default(0) @map("accIcon")
+  accShip       Int     @default(0) @map("accShip")
+  accBall       Int     @default(0) @map("accBall")
+  accBird       Int     @default(0) @map("accBird")
+  accDart       Int     @default(0) @map("accDart")
+  accRobot      Int?    @default(0) @map("accRobot")
+  accGlow       Int     @default(0) @map("accGlow")
+  accSwing      Int     @default(0) @map("accSwing")
+  accJetpack    Int     @default(0) @map("accJetpack")
+  dinfo         String  @default("") @map("dinfo")
+  sinfo         String  @default("") @map("sinfo")
+  pinfo         String  @default("") @map("pinfo")
+  creatorPoints Float   @default(0) @map("creatorPoints")
+  IP            String  @default("127.0.0.1") @map("IP")
+  lastPlayed    Int     @default(0) @map("lastPlayed")
+  diamonds      Int     @default(0) @map("diamonds")
+  moons         Int     @default(0) @map("moons")
+  orbs          Int     @default(0) @map("orbs")
+  completedLvls Int     @default(0) @map("completedLvls")
+  accSpider     Int     @default(0) @map("accSpider")
+  accExplosion  Int     @default(0) @map("accExplosion")
+  chest1time    Int     @default(0) @map("chest1time")
+  chest2time    Int     @default(0) @map("chest2time")
+  chest1count   Int     @default(0) @map("chest1count")
+  chest2count   Int     @default(0) @map("chest2count")
+  isBanned      Int     @default(0) @map("isBanned")
+  isCreatorBanned Int   @default(0) @map("isCreatorBanned")
+
+  @@map("users")
+}
+
+
+
 /*
-CREATE TABLE `actions` (
+CREATE TABLE `blocks` (
+  `ID` int(11) NOT NULL,
+  `person1` int(11) NOT NULL,
+  `person2` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `comments` (
+  `userID` int(11) NOT NULL,
+  `userName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `comment` longtext COLLATE utf8_unicode_ci NOT NULL,
+  `secret` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'none',
+  `levelID` int(11) NOT NULL,
+  `commentID` int(11) NOT NULL,
+  `timestamp` int(11) NOT NULL,
+  `likes` int(11) NOT NULL DEFAULT '0',
+  `percent` int(11) NOT NULL DEFAULT '0',
+  `isSpam` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `cpshares` (
+  `shareID` int(11) NOT NULL,
+  `levelID` int(11) NOT NULL,
+  `userID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `dailyfeatures` (
+  `feaID` int(11) NOT NULL,
+  `levelID` int(11) NOT NULL,
+  `timestamp` int(11) NOT NULL,
+  `type` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `friendreqs` (
+  `accountID` int(11) NOT NULL,
+  `toAccountID` int(11) NOT NULL,
+  `comment` varchar(1000) COLLATE utf8_unicode_ci NOT NULL,
+  `uploadDate` int(11) NOT NULL,
+  `ID` int(11) NOT NULL,
+  `isNew` tinyint(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `friendships` (
+  `ID` int(11) NOT NULL,
+  `person1` int(11) NOT NULL,
+  `person2` int(11) NOT NULL,
+  `isNew1` int(11) NOT NULL,
+  `isNew2` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `gauntlets` (
+  `ID` int(11) NOT NULL,
+  `level1` int(11) NOT NULL,
+  `level2` int(11) NOT NULL,
+  `level3` int(11) NOT NULL,
+  `level4` int(11) NOT NULL,
+  `level5` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `levels` (
+  `gameVersion` int(11) NOT NULL,
+  `binaryVersion` int(11) NOT NULL DEFAULT '0',
+  `userName` mediumtext COLLATE utf8_unicode_ci NOT NULL,
+  `levelID` int(11) NOT NULL,
+  `levelName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `levelDesc` mediumtext COLLATE utf8_unicode_ci NOT NULL,
+  `levelVersion` int(11) NOT NULL,
+  `levelLength` int(11) NOT NULL DEFAULT '0',
+  `audioTrack` int(11) NOT NULL,
+  `auto` int(11) NOT NULL,
+  `password` int(11) NOT NULL,
+  `original` int(11) NOT NULL,
+  `twoPlayer` int(11) NOT NULL DEFAULT '0',
+  `songID` int(11) NOT NULL DEFAULT '0',
+  `songIDs` varchar(2048) COLLATE utf8_unicode_ci DEFAULT '',
+  `sfxIDs` varchar(2048) COLLATE utf8_unicode_ci DEFAULT '',
+  `objects` int(11) NOT NULL DEFAULT '0',
+  `coins` int(11) NOT NULL DEFAULT '0',
+  `requestedStars` int(11) NOT NULL DEFAULT '0',
+  `extraString` mediumtext COLLATE utf8_unicode_ci NOT NULL,
+  `levelString` longtext COLLATE utf8_unicode_ci,
+  `levelInfo` mediumtext COLLATE utf8_unicode_ci NOT NULL,
+  `secret` mediumtext COLLATE utf8_unicode_ci NOT NULL,
+  `starDifficulty` int(11) NOT NULL DEFAULT '0' COMMENT '0=N/A 10=EASY 20=NORMAL 30=HARD 40=HARDER 50=INSANE 50=AUTO 50=DEMON',
+  `downloads` int(11) NOT NULL DEFAULT '300',
+  `likes` int(11) NOT NULL DEFAULT '100',
+  `starDemon` int(1) NOT NULL DEFAULT '0',
+  `starAuto` tinyint(4) NOT NULL DEFAULT '0',
+  `starStars` int(11) NOT NULL DEFAULT '0',
+  `uploadDate` bigint(20) NOT NULL,
+  `updateDate` bigint(20) NOT NULL,
+  `rateDate` bigint(20) NOT NULL DEFAULT '0',
+  `starCoins` int(11) NOT NULL DEFAULT '0',
+  `starFeatured` int(11) NOT NULL DEFAULT '0',
+  `starHall` int(11) NOT NULL DEFAULT '0',
+  `starEpic` int(11) NOT NULL DEFAULT '0',
+  `starDemonDiff` int(11) NOT NULL DEFAULT '0',
+  `userID` int(11) NOT NULL,
+  `extID` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `unlisted` int(11) NOT NULL,
+  `originalReup` int(11) NOT NULL DEFAULT '0' COMMENT 'used for levelReupload.php',
+  `hostname` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `isCPShared` int(11) NOT NULL DEFAULT '0',
+  `isDeleted` int(11) NOT NULL DEFAULT '0',
+  `isLDM` int(11) NOT NULL DEFAULT '0',
+  `unlisted2` int(11) NOT NULL DEFAULT '0',
+  `wt` int(11) NOT NULL DEFAULT '0',
+  `wt2` int(11) NOT NULL DEFAULT '0',
+  `ts` int(11) NOT NULL DEFAULT '0',
+  `settingsString` mediumtext COLLATE utf8_unicode_ci NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `levelscores` (
+  `scoreID` int(11) NOT NULL,
+  `accountID` int(11) NOT NULL,
+  `levelID` int(11) NOT NULL,
+  `percent` int(11) NOT NULL,
+  `uploadDate` int(11) NOT NULL,
+  `attempts` int(11) NOT NULL DEFAULT '0',
+  `coins` int(11) NOT NULL DEFAULT '0',
+  `clicks` int(11) NOT NULL DEFAULT '0',
+  `time` int(11) NOT NULL DEFAULT '0',
+  `progresses` text COLLATE utf8_unicode_ci NOT NULL,
+  `dailyID` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `links` (
+  `ID` int(11) NOT NULL,
+  `accountID` int(11) NOT NULL,
+  `targetAccountID` int(11) NOT NULL,
+  `server` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `timestamp` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
+  `targetUserID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `lists` (
+  `listID` int(11) NOT NULL,
+  `listName` varchar(2048) CHARACTER SET utf8 NOT NULL,
+  `listDesc` varchar(2048) CHARACTER SET utf8 NOT NULL,
+  `listVersion` int(11) NOT NULL DEFAULT '1',
+  `accountID` int(11) NOT NULL,
+  `downloads` int(11) NOT NULL DEFAULT '0',
+  `starDifficulty` int(11) NOT NULL,
+  `likes` int(11) NOT NULL DEFAULT '0',
+  `starFeatured` int(11) NOT NULL DEFAULT '0',
+  `starStars` int(11) NOT NULL DEFAULT '0',
+  `listlevels` varchar(2048) CHARACTER SET utf8 NOT NULL,
+  `countForReward` int(11) NOT NULL DEFAULT '0',
+  `uploadDate` int(11) NOT NULL DEFAULT '0',
+  `updateDate` int(11) NOT NULL DEFAULT '0',
+  `original` int(11) NOT NULL DEFAULT '0',
+  `unlisted` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `mappacks` (
+  `ID` int(11) NOT NULL,
+  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `levels` varchar(512) COLLATE utf8_unicode_ci NOT NULL COMMENT 'entered as "ID of level 1, ID of level 2, ID of level 3" for example "13,14,15" (without the "s)',
+  `stars` int(11) NOT NULL,
+  `coins` int(11) NOT NULL,
+  `difficulty` int(11) NOT NULL,
+  `rgbcolors` varchar(11) COLLATE utf8_unicode_ci NOT NULL COMMENT 'entered as R,G,B',
+  `colors2` varchar(11) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'none'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `messages` (
+  `userID` int(11) NOT NULL,
+  `userName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `body` longtext COLLATE utf8_unicode_ci NOT NULL,
+  `subject` longtext COLLATE utf8_unicode_ci NOT NULL,
+  `accID` int(11) NOT NULL,
+  `messageID` int(11) NOT NULL,
+  `toAccountID` int(11) NOT NULL,
+  `timestamp` int(11) NOT NULL,
+  `secret` varchar(25) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'unused',
+  `isNew` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `modactions` (
   `ID` int(11) NOT NULL,
   `type` int(11) NOT NULL DEFAULT '0',
   `value` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `timestamp` int(11) NOT NULL DEFAULT '0',
   `value2` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `value3` int(11) NOT NULL DEFAULT '0',
-  `value4` int(11) NOT NULL DEFAULT '0',
+  `value4` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `value5` int(11) NOT NULL DEFAULT '0',
   `value6` int(11) NOT NULL DEFAULT '0',
-  `account` int(11) NOT NULL DEFAULT '0'
+  `account` int(11) NOT NULL DEFAULT '0',
+  `value7` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 */
 
-model Actions {
-	ID Int @id @map("ID")
-	type Int @default(0)
-	value String
-	timestamp Int @default(0)
-	value2 String
-	value3 Int @default(0)
-	value4 Int @default(0)
-	value5 Int @default(0)
-	value6 Int @default(0)
-	account Int @default(0)
 
-	@@map("actions")
-}
+
+/*
+CREATE TABLE `modipperms` (
+  `categoryID` int(11) NOT NULL,
+  `actionFreeCopy` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `modips` (
+  `ID` int(11) NOT NULL,
+  `IP` varchar(69) COLLATE utf8_unicode_ci NOT NULL,
+  `isMod` int(11) NOT NULL,
+  `accountID` int(11) NOT NULL,
+  `modipCategory` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `platscores` (
+  `ID` int(11) NOT NULL,
+  `accountID` int(11) NOT NULL DEFAULT '0',
+  `levelID` int(11) NOT NULL DEFAULT '0',
+  `time` int(11) NOT NULL DEFAULT '0',
+  `points` int(11) NOT NULL DEFAULT '0',
+  `timestamp` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `quests` (
+  `ID` int(11) NOT NULL,
+  `type` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `reward` int(11) NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+/*
+CREATE TABLE `reports` (
+  `ID` int(11) NOT NULL,
+  `levelID` int(11) NOT NULL,
+  `hostname` varchar(255) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `roleassign` (
+  `assignID` bigint(20) NOT NULL,
+  `roleID` bigint(20) NOT NULL,
+  `accountID` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `roles` (
+  `roleID` bigint(11) NOT NULL,
+  `priority` int(11) NOT NULL DEFAULT '0',
+  `roleName` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `commandRate` int(11) NOT NULL DEFAULT '0',
+  `commandFeature` int(11) NOT NULL DEFAULT '0',
+  `commandEpic` int(11) NOT NULL DEFAULT '0',
+  `commandUnepic` int(11) NOT NULL DEFAULT '0',
+  `commandVerifycoins` int(11) NOT NULL DEFAULT '0',
+  `commandDaily` int(11) NOT NULL DEFAULT '0',
+  `commandWeekly` int(11) NOT NULL DEFAULT '0',
+  `commandDelete` int(11) NOT NULL DEFAULT '0',
+  `commandSetacc` int(11) NOT NULL DEFAULT '0',
+  `commandRenameOwn` int(11) NOT NULL DEFAULT '1',
+  `commandRenameAll` int(11) NOT NULL DEFAULT '0',
+  `commandPassOwn` int(11) NOT NULL DEFAULT '1',
+  `commandPassAll` int(11) NOT NULL DEFAULT '0',
+  `commandDescriptionOwn` int(11) NOT NULL DEFAULT '1',
+  `commandDescriptionAll` int(11) NOT NULL DEFAULT '0',
+  `commandPublicOwn` int(11) NOT NULL DEFAULT '1',
+  `commandPublicAll` int(11) NOT NULL DEFAULT '0',
+  `commandUnlistOwn` int(11) NOT NULL DEFAULT '1',
+  `commandUnlistAll` int(11) NOT NULL DEFAULT '0',
+  `commandSharecpOwn` int(11) NOT NULL DEFAULT '1',
+  `commandSharecpAll` int(11) NOT NULL DEFAULT '0',
+  `commandSongOwn` int(11) NOT NULL DEFAULT '1',
+  `commandSongAll` int(11) NOT NULL DEFAULT '0',
+  `profilecommandDiscord` int(11) NOT NULL DEFAULT '1',
+  `actionRateDemon` int(11) NOT NULL DEFAULT '0',
+  `actionRateStars` int(11) NOT NULL DEFAULT '0',
+  `actionRateDifficulty` int(11) NOT NULL DEFAULT '0',
+  `actionRequestMod` int(11) NOT NULL DEFAULT '0',
+  `actionSuggestRating` int(11) NOT NULL DEFAULT '0',
+  `actionDeleteComment` int(11) NOT NULL DEFAULT '0',
+  `toolLeaderboardsban` int(11) NOT NULL DEFAULT '0',
+  `toolPackcreate` int(11) NOT NULL DEFAULT '0',
+  `toolQuestsCreate` int(11) NOT NULL DEFAULT '0',
+  `toolModactions` int(11) NOT NULL DEFAULT '0',
+  `toolSuggestlist` int(11) NOT NULL DEFAULT '0',
+  `dashboardModTools` int(11) NOT NULL DEFAULT '0',
+  `modipCategory` int(11) NOT NULL DEFAULT '0',
+  `isDefault` int(11) NOT NULL DEFAULT '0',
+  `commentColor` varchar(11) CHARACTER SET utf8 NOT NULL DEFAULT '000,000,000',
+  `modBadgeLevel` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `songs` (
+  `ID` int(11) NOT NULL,
+  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `authorID` int(11) NOT NULL,
+  `authorName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `size` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `download` varchar(1337) COLLATE utf8_unicode_ci NOT NULL,
+  `hash` varchar(256) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `isDisabled` int(11) NOT NULL DEFAULT '0',
+  `levelsCount` int(11) NOT NULL DEFAULT '0',
+  `reuploadTime` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+/*
+CREATE TABLE `suggest` (
+  `ID` int(11) NOT NULL,
+  `suggestBy` int(11) NOT NULL DEFAULT '0',
+  `suggestLevelId` int(11) NOT NULL DEFAULT '0',
+  `suggestDifficulty` int(11) NOT NULL DEFAULT '0' COMMENT '0 - NA 10 - Easy 20 - Normal 30 - Hard 40 - Harder 50 - Insane/Demon/Auto',
+  `suggestStars` int(11) NOT NULL DEFAULT '0',
+  `suggestFeatured` int(11) NOT NULL DEFAULT '0',
+  `suggestAuto` int(11) NOT NULL DEFAULT '0',
+  `suggestDemon` int(11) NOT NULL DEFAULT '0',
+  `timestamp` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+/*
+CREATE TABLE `users` (
+  `isRegistered` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
+  `extID` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `userName` varchar(69) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'undefined',
+  `stars` int(11) NOT NULL DEFAULT '0',
+  `demons` int(11) NOT NULL DEFAULT '0',
+  `icon` int(11) NOT NULL DEFAULT '0',
+  `color1` int(11) NOT NULL DEFAULT '0',
+  `color2` int(11) NOT NULL DEFAULT '3',
+  `color3` int(11) NOT NULL DEFAULT '0',
+  `iconType` int(11) NOT NULL DEFAULT '0',
+  `coins` int(11) NOT NULL DEFAULT '0',
+  `userCoins` int(11) NOT NULL DEFAULT '0',
+  `special` int(11) NOT NULL DEFAULT '0',
+  `gameVersion` int(11) NOT NULL DEFAULT '0',
+  `secret` varchar(69) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'none',
+  `accIcon` int(11) NOT NULL DEFAULT '0',
+  `accShip` int(11) NOT NULL DEFAULT '0',
+  `accBall` int(11) NOT NULL DEFAULT '0',
+  `accBird` int(11) NOT NULL DEFAULT '0',
+  `accDart` int(11) NOT NULL DEFAULT '0',
+  `accRobot` int(11) DEFAULT '0',
+  `accGlow` int(11) NOT NULL DEFAULT '0',
+  `accSwing` int(11) NOT NULL DEFAULT '0',
+  `accJetpack` int(11) NOT NULL DEFAULT '0',
+  `dinfo` varchar(100) COLLATE utf8_unicode_ci DEFAULT '',
+  `sinfo` varchar(100) COLLATE utf8_unicode_ci DEFAULT '',
+  `pinfo` varchar(100) COLLATE utf8_unicode_ci DEFAULT '',
+  `creatorPoints` double NOT NULL DEFAULT '0',
+  `IP` varchar(69) COLLATE utf8_unicode_ci NOT NULL DEFAULT '127.0.0.1',
+  `lastPlayed` int(11) NOT NULL DEFAULT '0',
+  `diamonds` int(11) NOT NULL DEFAULT '0',
+  `moons` int(11) NOT NULL DEFAULT '0',
+  `orbs` int(11) NOT NULL DEFAULT '0',
+  `completedLvls` int(11) NOT NULL DEFAULT '0',
+  `accSpider` int(11) NOT NULL DEFAULT '0',
+  `accExplosion` int(11) NOT NULL DEFAULT '0',
+  `chest1time` int(11) NOT NULL DEFAULT '0',
+  `chest2time` int(11) NOT NULL DEFAULT '0',
+  `chest1count` int(11) NOT NULL DEFAULT '0',
+  `chest2count` int(11) NOT NULL DEFAULT '0',
+  `isBanned` int(11) NOT NULL DEFAULT '0',
+  `isCreatorBanned` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+--
+-- Индексы таблицы `acccomments`
+--
+ALTER TABLE `acccomments`
+  ADD PRIMARY KEY (`commentID`),
+  ADD KEY `userID` (`userID`),
+  ADD KEY `timestamp` (`timestamp`);
+
+--
+-- Индексы таблицы `accounts`
+--
+ALTER TABLE `accounts`
+  ADD PRIMARY KEY (`accountID`),
+  ADD UNIQUE KEY `userName` (`userName`),
+  ADD KEY `isAdmin` (`isAdmin`),
+  ADD KEY `frS` (`frS`),
+  ADD KEY `discordID` (`discordID`),
+  ADD KEY `discordLinkReq` (`discordLinkReq`),
+  ADD KEY `friendsCount` (`friendsCount`),
+  ADD KEY `isActive` (`isActive`);
+
+--
+-- Индексы таблицы `actions`
+--
+ALTER TABLE `actions`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `type` (`type`),
+  ADD KEY `value` (`value`),
+  ADD KEY `value2` (`value2`),
+  ADD KEY `timestamp` (`timestamp`);
+
+--
+-- Индексы таблицы `actions_downloads`
+--
+ALTER TABLE `actions_downloads`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `levelID` (`levelID`,`ip`,`uploadDate`) USING BTREE;
+
+--
+-- Индексы таблицы `actions_likes`
+--
+ALTER TABLE `actions_likes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `levelID` (`itemID`,`type`,`isLike`,`ip`,`uploadDate`) USING BTREE;
+
+--
+-- Индексы таблицы `bannedips`
+--
+ALTER TABLE `bannedips`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Индексы таблицы `blocks`
+--
+ALTER TABLE `blocks`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `ID` (`ID`),
+  ADD KEY `person1` (`person1`),
+  ADD KEY `person2` (`person2`);
+
+--
+-- Индексы таблицы `comments`
+--
+ALTER TABLE `comments`
+  ADD PRIMARY KEY (`commentID`),
+  ADD KEY `levelID` (`levelID`),
+  ADD KEY `userID` (`userID`),
+  ADD KEY `likes` (`likes`);
+
+ALTER TABLE `cpshares`
+  ADD PRIMARY KEY (`shareID`),
+  ADD KEY `levelID` (`levelID`);
+
+ALTER TABLE `dailyfeatures`
+  ADD PRIMARY KEY (`feaID`),
+  ADD KEY `type` (`type`),
+  ADD KEY `timestamp` (`timestamp`);
+
+ALTER TABLE `friendreqs`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `toAccountID` (`toAccountID`),
+  ADD KEY `accountID` (`accountID`),
+  ADD KEY `uploadDate` (`uploadDate`);
+
+ALTER TABLE `friendships`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `person1` (`person1`),
+  ADD KEY `person2` (`person2`),
+  ADD KEY `isNew1` (`isNew1`),
+  ADD KEY `isNew2` (`isNew2`);
+
+ALTER TABLE `gauntlets`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `level5` (`level5`);
+
+ALTER TABLE `levels`
+  ADD PRIMARY KEY (`levelID`),
+  ADD KEY `levelID` (`levelID`),
+  ADD KEY `levelName` (`levelName`),
+  ADD KEY `starDifficulty` (`starDifficulty`),
+  ADD KEY `starFeatured` (`starFeatured`),
+  ADD KEY `starEpic` (`starEpic`),
+  ADD KEY `starDemonDiff` (`starDemonDiff`),
+  ADD KEY `userID` (`userID`),
+  ADD KEY `likes` (`likes`),
+  ADD KEY `downloads` (`downloads`),
+  ADD KEY `starStars` (`starStars`),
+  ADD KEY `songID` (`songID`),
+  ADD KEY `audioTrack` (`audioTrack`),
+  ADD KEY `levelLength` (`levelLength`),
+  ADD KEY `twoPlayer` (`twoPlayer`),
+  ADD KEY `starDemon` (`starDemon`),
+  ADD KEY `starAuto` (`starAuto`),
+  ADD KEY `extID` (`extID`),
+  ADD KEY `uploadDate` (`uploadDate`),
+  ADD KEY `updateDate` (`updateDate`),
+  ADD KEY `starCoins` (`starCoins`),
+  ADD KEY `coins` (`coins`),
+  ADD KEY `password` (`password`),
+  ADD KEY `originalReup` (`originalReup`),
+  ADD KEY `original` (`original`),
+  ADD KEY `unlisted` (`unlisted`),
+  ADD KEY `isCPShared` (`isCPShared`),
+  ADD KEY `gameVersion` (`gameVersion`),
+  ADD KEY `rateDate` (`rateDate`),
+  ADD KEY `objects` (`objects`),
+  ADD KEY `unlisted2` (`unlisted2`);
+
+ALTER TABLE `levelscores`
+  ADD PRIMARY KEY (`scoreID`),
+  ADD KEY `levelID` (`levelID`),
+  ADD KEY `accountID` (`accountID`);
+
+ALTER TABLE `links`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `targetUserID` (`targetUserID`),
+  ADD KEY `targetAccountID` (`targetAccountID`),
+  ADD KEY `server` (`server`);
+
+ALTER TABLE `lists`
+  ADD PRIMARY KEY (`listID`);
+
+ALTER TABLE `mappacks`
+  ADD PRIMARY KEY (`ID`);
+
+ALTER TABLE `messages`
+  ADD PRIMARY KEY (`messageID`),
+  ADD KEY `toAccountID` (`toAccountID`),
+  ADD KEY `accID` (`accID`);
+
+ALTER TABLE `modactions`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `account` (`account`),
+  ADD KEY `type` (`type`),
+  ADD KEY `value3` (`value3`);
+
+ALTER TABLE `modipperms`
+  ADD PRIMARY KEY (`categoryID`);
+
+ALTER TABLE `modips`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `accountID` (`accountID`),
+  ADD KEY `IP` (`IP`);
+
+ALTER TABLE `platscores`
+  ADD PRIMARY KEY (`ID`);
+
+ALTER TABLE `quests`
+  ADD PRIMARY KEY (`ID`);
+
+ALTER TABLE `reports`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `levelID` (`levelID`),
+  ADD KEY `hostname` (`hostname`);
+
+ALTER TABLE `roleassign`
+  ADD PRIMARY KEY (`assignID`),
+  ADD KEY `roleID` (`roleID`),
+  ADD KEY `accountID` (`accountID`);
+
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`roleID`),
+  ADD KEY `priority` (`priority`),
+  ADD KEY `toolModactions` (`toolModactions`);
+
+ALTER TABLE `songs`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `name` (`name`),
+  ADD KEY `authorName` (`authorName`);
+
+ALTER TABLE `suggest`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `timestamp` (`timestamp`);
+
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`userID`),
+  ADD KEY `userID` (`userID`),
+  ADD KEY `userName` (`userName`),
+  ADD KEY `stars` (`stars`),
+  ADD KEY `demons` (`demons`),
+  ADD KEY `coins` (`coins`),
+  ADD KEY `userCoins` (`userCoins`),
+  ADD KEY `gameVersion` (`gameVersion`),
+  ADD KEY `creatorPoints` (`creatorPoints`),
+  ADD KEY `diamonds` (`diamonds`),
+  ADD KEY `orbs` (`orbs`),
+  ADD KEY `completedLvls` (`completedLvls`),
+  ADD KEY `isBanned` (`isBanned`),
+  ADD KEY `isCreatorBanned` (`isCreatorBanned`),
+  ADD KEY `extID` (`extID`),
+  ADD KEY `IP` (`IP`),
+  ADD KEY `isRegistered` (`isRegistered`);
+
+ALTER TABLE `acccomments`
+  MODIFY `commentID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `accounts`
+  MODIFY `accountID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `actions`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `actions_downloads`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `actions_likes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `bannedips`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `blocks`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `comments`
+  MODIFY `commentID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `cpshares`
+  MODIFY `shareID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `dailyfeatures`
+  MODIFY `feaID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `friendreqs`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `friendships`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `gauntlets`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `levels`
+  MODIFY `levelID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `levelscores`
+  MODIFY `scoreID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `links`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `lists`
+  MODIFY `listID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `mappacks`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `messages`
+  MODIFY `messageID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `modactions`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `modipperms`
+  MODIFY `categoryID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `modips`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `platscores`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `quests`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `reports`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `roleassign`
+  MODIFY `assignID` bigint(20) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `roles`
+  MODIFY `roleID` bigint(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `songs`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `suggest`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `users`
+  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;
+*/

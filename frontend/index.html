@@ -7,6 +7,10 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- runtime config (served from /config.js). The proxy will generate this at container start
+         from the backend config so the owner can edit the backend/config/config.json without
+         rebuilding the frontend image. -->
+    <script src="/config.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
