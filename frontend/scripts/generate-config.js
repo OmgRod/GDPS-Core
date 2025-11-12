@@ -26,8 +26,7 @@ fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(outFile, content, 'utf8');
 console.log('Wrote', outFile);
 
-// Also emit a small runtime JS file that can be mounted/served at /config.js so the deployed
-// nginx proxy can serve dynamic config without rebuilding the frontend.
+// Also emit a small runtime JS file that can be served at /config.js for dynamic config.
 const publicContent = `window.__GDPS_CONFIG = ${JSON.stringify(config, null, 2)};`;
 fs.mkdirSync(publicDir, { recursive: true });
 fs.writeFileSync(publicFile, publicContent, 'utf8');

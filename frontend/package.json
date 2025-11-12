@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "node scripts/generate-config.js && vite",
     "build": "node scripts/generate-config.js && vite build",
-    "start": "vite preview --port 8080"
+    "start": "vite preview --port 5173"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
