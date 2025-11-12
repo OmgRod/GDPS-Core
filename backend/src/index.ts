@@ -2,13 +2,13 @@ import express from "express";
 import cors from "cors";
 
 const app = express();
-// Restrictive CORS for security: allow requests from the proxy (same host/port) or explicit origins.
+// Restrictive CORS for security: allow requests from localhost or explicit origins.
 // In development you can set FRONTEND_ORIGIN or allow all if needed. Here we allow same origin and localhost.
 const corsOptions = {
   origin: (origin: any, callback: any) => {
     // allow requests with no origin (e.g., curl, Postman)
     if (!origin) return callback(null, true);
-    // allow localhost origins and the proxy host
+    // allow localhost origins
     if (origin.startsWith("http://localhost") || origin.startsWith("http://127.0.0.1")) {
       return callback(null, true);
     }
