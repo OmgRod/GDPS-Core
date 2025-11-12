@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import gdpsRoutes from "./routes/index";
 
 const app = express();
 // Restrictive CORS for security: allow requests from localhost or explicit origins.
@@ -22,6 +23,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // For form-encoded data from GD client
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
@@ -49,6 +51,9 @@ app.get("/api/getConfig", (req, res) => {
     }
   })();
 });
+
+// Mount GDPS routes
+app.use("/", gdpsRoutes);
 
 app.listen(PORT, () => {
   console.log(`Backend listening on http://0.0.0.0:${PORT}`);
