@@ -6,6 +6,3 @@ docker/secrets/studio_pass.txt
 frontend/src/generated
 frontend/public/config.js
 docker/proxy/.htpasswd
-package-lock.json
-yarn.lock
-.yarnrc.yml
