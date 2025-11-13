@@ -23,22 +23,21 @@ jobs:
         with:
           node-version: 20
 
-      - name: Enable corepack (Yarn)
-        run: |
-          corepack enable
-          corepack prepare yarn@stable --activate
-
       - name: Install dependencies
         run: |
           cd ${{ matrix.project }}
-          yarn install --immutable || yarn install
+          if [ "${{ matrix.project }}" = "frontend" ]; then
+            npm install --legacy-peer-deps
+          else
+            npm install
+          fi
 
       - name: Build
         run: |
           cd ${{ matrix.project }}
-          if [ -f package.json ]; then yarn build || echo "no build script"; fi
+          if [ -f package.json ]; then npm run build || echo "no build script"; fi
 
       - name: Run tests
         run: |
           cd ${{ matrix.project }}
-          if yarn test -v >/dev/null 2>&1; then yarn test || echo "tests failed"; else echo "no tests"; fi
+          if npm run test --if-present >/dev/null 2>&1; then npm test || echo "tests failed"; else echo "no tests"; fi

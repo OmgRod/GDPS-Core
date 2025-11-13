@@ -12,10 +12,9 @@ docker compose up --build
 
 Services:
 - Backend: http://localhost:3000 (API under /api)
-- Frontend: http://localhost (served via nginx proxy)
+- Frontend: http://localhost:5173 (served via Vite, proxies /api to backend)
 - Postgres: localhost:5432
-- Adminer: http://localhost:3002
-- Prisma Studio (if enabled): http://localhost:5555
+- Prisma Studio: http://localhost:5555
 
 Development notes
 - Backend code: `backend/src`

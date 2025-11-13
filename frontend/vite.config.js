@@ -2,11 +2,11 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   server: {
-    port: 5173, // new port for dev server
+    port: 5173,
     proxy: {
-      // Proxy API requests to the nginx proxy (frontend/backend) on host port 8080
+      // Proxy API requests directly to the backend service on port 3000
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/api')
