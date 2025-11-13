@@ -3,8 +3,6 @@ import { Routes, Route, Outlet } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import About from "./pages/About";
-import EchoPage from "./pages/Echo";
 import NotFound from "./pages/NotFound";
 
 function Layout() {
@@ -24,8 +22,6 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path="about" element={<About />} />
-        <Route path="echo" element={<EchoPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
